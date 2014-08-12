@@ -26,11 +26,24 @@ namespace AsciiArtGenerator
         public Generator()
         {
             _characterPool = generateCharacterPool();
+            _horizResolution = 4;
+            _vertResolution = 4;
+            _textColumns = 80;
+            _textRows = 80;
         }
 
-        public Generator(List<char> characterPool)
+        public Generator(List<char> characterPool, int horizResolution, int vertResolution, int textColumns, int textRows)
         {
             _characterPool = characterPool;
+            _horizResolution = horizResolution;
+            _vertResolution = vertResolution;
+            _textColumns = textColumns;
+            _textRows = textRows;
+        }
+
+        public bool CharactersReady
+        {
+            get { return _charactersReady; }
         }
 
         public bool IsReady{
@@ -46,7 +59,7 @@ namespace AsciiArtGenerator
         {
             _chosenFont = new Font(chosenFont.FontFamily, 72);
             _fontIsDirty = true;
-            //TODO generate character darkness maps
+            generateCharacterDarknessMaps();
         }
 
         public void SetImage(Bitmap incomingBitmap)
@@ -68,6 +81,85 @@ namespace AsciiArtGenerator
             }
 
             return ret;
+        }
+
+        private void generateCharacterDarknessMaps()
+        {
+            //TODO make this multithreaded
+
+            var ret = new List<CharacterDarknessMap>();
+            Debug.WriteLine("Generating Character Darkness Maps");
+            
+            //TODO figure out a better way to get the dimensions of this font
+            Bitmap a = new Bitmap(1000, 1000);
+            Graphics charG = Graphics.FromImage(a);
+
+            Debug.WriteLine("Creating character buffer image...");
+            Bitmap charBuffer = new Bitmap((int)charG.MeasureString("M", _chosenFont).Width, (int)charG.MeasureString("M", _chosenFont).Height);
+            Debug.WriteLine("Buffer image is " + charBuffer.Width + "x" + charBuffer.Height);
+            Debug.WriteLine("Creating character quadrant buffer image...");
+            Bitmap charQuadBuffer = new Bitmap(charBuffer.Width / _horizResolution, charBuffer.Height / _vertResolution);
+            Graphics quadG = Graphics.FromImage(charQuadBuffer);
+            Debug.WriteLine("Character Quadrang buffer image is " + charQuadBuffer.Width + "x" + charQuadBuffer.Height);
+
+            charG = Graphics.FromImage(charBuffer);
+            charG.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            charG.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            charG.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+            foreach (char iChar in _characterPool)
+            {
+                Debug.WriteLine("Analyzing '" + iChar + "'");
+                Debug.WriteLine("Painting '" + iChar + "' to buffer image...");
+                charG.FillRectangle(Brushes.White, 0, 0, charBuffer.Width, charBuffer.Height);
+                charG.DrawString(iChar.ToString(), _chosenFont, Brushes.Black, 0, 0);
+                charG.Flush();
+
+                CharacterDarknessMap dm = new CharacterDarknessMap { Character = iChar };
+                byte[] darknessMap = new byte[_vertResolution * _horizResolution];
+                int d = 0;
+                for (int y = 0; y < _vertResolution; y++)
+                {
+                    for (int x = 0; x < _horizResolution; x++)
+                    {
+                        Debug.WriteLine("Analyzing character quadrant " + x + "," + y);
+                        var destRect = new Rectangle(0, 0, charQuadBuffer.Width, charQuadBuffer.Height);
+                        var srcRect = new Rectangle((charBuffer.Width * x) / _horizResolution, (charBuffer.Height * y) / _vertResolution, charQuadBuffer.Width, charQuadBuffer.Height);
+                        quadG.DrawImage(charBuffer, destRect, srcRect, GraphicsUnit.Pixel);
+                        quadG.Flush();
+                        byte quadrantDarkness = charQuadBuffer.GetDarkness();
+                        Debug.WriteLine("Darkness: " + quadrantDarkness);
+                        darknessMap[d] = quadrantDarkness;
+                        d++;
+                    }
+                }
+                dm.Darknesses = darknessMap;
+                ret.Add(dm);
+            }
+
+            Debug.WriteLine("Normalizing Character Darkness Maps");
+            byte highestOriginal = 0;
+            foreach (var map in ret)
+            {
+                highestOriginal = Math.Max(map.Darknesses.Max(), highestOriginal);
+            }
+            Debug.WriteLine("Highest darkness was " + highestOriginal);
+            decimal stretchFactor = ((decimal)255 / (decimal)highestOriginal);
+            Debug.WriteLine("Stretching each value by a factor of " + stretchFactor);
+
+            foreach (var map in ret)
+            {
+                Debug.Write("'" + map.Character + "' -");
+                for (int i = 0; i < map.Darknesses.Length; i++)
+                {
+                    map.Darknesses[i] = (byte)(map.Darknesses[i] * stretchFactor);
+                    Debug.Write(" " + map.Darknesses[i].ToString("D3"));
+                }
+                Debug.WriteLine("");
+            }
+
+            _characterDarknessMaps = ret;
+            _charactersReady = true;
         }
 
         public String Generate()

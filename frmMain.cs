@@ -40,7 +40,7 @@ namespace AsciiArtGenerator
             try
             {
                 var output = _generator.Generate();
-                System.IO.File.WriteAllText(@"C:\ascii.text", output);
+                System.IO.File.WriteAllText(@"output.txt", output);
                 //TODO create a save file dialog
             }
             catch (Exception ex)
@@ -55,6 +55,7 @@ namespace AsciiArtGenerator
 
             //TODO replace stupid yellow/green squares with actual icons
             picPreparedImage.BackColor = (_generator.ImageIsReady) ? Color.Green : Color.Yellow;
+            picPreparedChars.BackColor = (_generator.CharactersReady) ? Color.Green : Color.Yellow;
         }
 
         private void btnChooseFont_Click(object sender, EventArgs e)
