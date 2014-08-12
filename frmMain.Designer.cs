@@ -28,11 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.btnGenerate = new System.Windows.Forms.Button();
             this.lblCharactersPrepared = new System.Windows.Forms.Label();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.picPreparedChars = new System.Windows.Forms.PictureBox();
             this.lblImagePrepared = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.picPreparedImage = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.lblFontWeight = new System.Windows.Forms.Label();
             this.lblFontSize = new System.Windows.Forms.Label();
@@ -45,8 +46,10 @@
             this.btnBrowseImage = new System.Windows.Forms.Button();
             this.picInput = new System.Windows.Forms.PictureBox();
             this.fontDialog1 = new System.Windows.Forms.FontDialog();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.tmrGuiUpdate = new System.Windows.Forms.Timer(this.components);
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            ((System.ComponentModel.ISupportInitialize)(this.picPreparedChars)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picPreparedImage)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picInput)).BeginInit();
@@ -73,15 +76,15 @@
             this.lblCharactersPrepared.TabIndex = 13;
             this.lblCharactersPrepared.Text = "Characters Prepared";
             // 
-            // pictureBox2
+            // picPreparedChars
             // 
-            this.pictureBox2.BackColor = System.Drawing.Color.Yellow;
-            this.pictureBox2.Location = new System.Drawing.Point(202, 159);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(2);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(20, 19);
-            this.pictureBox2.TabIndex = 12;
-            this.pictureBox2.TabStop = false;
+            this.picPreparedChars.BackColor = System.Drawing.Color.Yellow;
+            this.picPreparedChars.Location = new System.Drawing.Point(202, 159);
+            this.picPreparedChars.Margin = new System.Windows.Forms.Padding(2);
+            this.picPreparedChars.Name = "picPreparedChars";
+            this.picPreparedChars.Size = new System.Drawing.Size(20, 19);
+            this.picPreparedChars.TabIndex = 12;
+            this.picPreparedChars.TabStop = false;
             // 
             // lblImagePrepared
             // 
@@ -93,15 +96,15 @@
             this.lblImagePrepared.TabIndex = 11;
             this.lblImagePrepared.Text = "Image Prepared";
             // 
-            // pictureBox1
+            // picPreparedImage
             // 
-            this.pictureBox1.BackColor = System.Drawing.Color.Yellow;
-            this.pictureBox1.Location = new System.Drawing.Point(202, 132);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(20, 19);
-            this.pictureBox1.TabIndex = 10;
-            this.pictureBox1.TabStop = false;
+            this.picPreparedImage.BackColor = System.Drawing.Color.Yellow;
+            this.picPreparedImage.Location = new System.Drawing.Point(202, 132);
+            this.picPreparedImage.Margin = new System.Windows.Forms.Padding(2);
+            this.picPreparedImage.Name = "picPreparedImage";
+            this.picPreparedImage.Size = new System.Drawing.Size(20, 19);
+            this.picPreparedImage.TabIndex = 10;
+            this.picPreparedImage.TabStop = false;
             // 
             // groupBox2
             // 
@@ -160,6 +163,7 @@
             this.btnChooseFont.TabIndex = 3;
             this.btnChooseFont.Text = "Choose...";
             this.btnChooseFont.UseVisualStyleBackColor = true;
+            this.btnChooseFont.Click += new System.EventHandler(this.btnChooseFont_Click);
             // 
             // label3
             // 
@@ -216,6 +220,7 @@
             this.btnBrowseImage.TabIndex = 1;
             this.btnBrowseImage.Text = "Browse...";
             this.btnBrowseImage.UseVisualStyleBackColor = true;
+            this.btnBrowseImage.Click += new System.EventHandler(this.btnBrowseImage_Click);
             // 
             // picInput
             // 
@@ -227,6 +232,15 @@
             this.picInput.TabIndex = 0;
             this.picInput.TabStop = false;
             // 
+            // tmrGuiUpdate
+            // 
+            this.tmrGuiUpdate.Enabled = true;
+            this.tmrGuiUpdate.Tick += new System.EventHandler(this.tmrGuiUpdate_Tick);
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -234,16 +248,16 @@
             this.ClientSize = new System.Drawing.Size(381, 248);
             this.Controls.Add(this.btnGenerate);
             this.Controls.Add(this.lblCharactersPrepared);
-            this.Controls.Add(this.pictureBox2);
+            this.Controls.Add(this.picPreparedChars);
             this.Controls.Add(this.lblImagePrepared);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.picPreparedImage);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "frmMain";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.frmMain_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picPreparedChars)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picPreparedImage)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -257,9 +271,9 @@
 
         private System.Windows.Forms.Button btnGenerate;
         private System.Windows.Forms.Label lblCharactersPrepared;
-        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.PictureBox picPreparedChars;
         private System.Windows.Forms.Label lblImagePrepared;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox picPreparedImage;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label lblFontWeight;
         private System.Windows.Forms.Label lblFontSize;
@@ -272,6 +286,8 @@
         private System.Windows.Forms.Button btnBrowseImage;
         private System.Windows.Forms.PictureBox picInput;
         private System.Windows.Forms.FontDialog fontDialog1;
+        private System.Windows.Forms.Timer tmrGuiUpdate;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }
 
