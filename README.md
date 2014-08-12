@@ -1,5 +1,8 @@
 AsciiArtGenerator
 =================
+This image goes in  
+![](smiley_face.jpg)  
+This text comes out
 
 ```
                                     ___________                                 
