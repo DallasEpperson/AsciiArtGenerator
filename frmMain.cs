@@ -31,7 +31,22 @@ namespace AsciiArtGenerator
 
         private void btnGenerate_Click(object sender, EventArgs e)
         {
+            if (!_generator.IsReady)
+            {
+                //How'd you get here?
+                return;
+            }
 
+            try
+            {
+                var output = _generator.Generate();
+                System.IO.File.WriteAllText(@"C:\ascii.text", output);
+                //TODO create a save file dialog
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!");
+            }
         }
 
         private void tmrGuiUpdate_Tick(object sender, EventArgs e)
